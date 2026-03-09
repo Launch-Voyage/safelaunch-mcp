@@ -87,7 +87,7 @@ export async function scanLocalDirectory(dir: string): Promise<RepoFile[]> {
   const filePaths: string[] = [];
   for (const entry of entries) {
     if (!entry.isFile()) continue;
-    const fullPath = join(entry.parentPath || entry.path, entry.name);
+    const fullPath = join((entry as any).parentPath ?? (entry as any).path ?? dir, entry.name);
     const relPath = relative(dir, fullPath).replace(/\\/g, "/");
     if (shouldIncludeFile(relPath)) {
       filePaths.push(relPath);
