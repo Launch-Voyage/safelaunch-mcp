@@ -28,16 +28,19 @@ interface StatusResponse {
 }
 
 export function registerStatusTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_status",
-    "Get the current security status of your GuardRail project including the latest scan grade, uptime, and SSL certificate status.",
     {
-      project: z
-        .string()
-        .optional()
-        .describe(
-          "Project name. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
-        ),
+      description:
+        "Get the current security status of your GuardRail project including the latest scan grade, uptime, and SSL certificate status.",
+      inputSchema: {
+        project: z
+          .string()
+          .optional()
+          .describe(
+            "Project name. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
+          ),
+      },
     },
     async ({ project: projectArg }) => {
       if (!apiClient.isConfigured()) {

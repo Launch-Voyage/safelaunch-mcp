@@ -21,22 +21,25 @@ const CHECK_LABELS: Record<string, string> = {
 };
 
 export function registerScanTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_scan",
-    "Scan your local project directory for security issues. Checks for exposed API keys, hardcoded secrets, missing rate limiting, and more. Results are saved to your GuardRail dashboard.",
     {
-      directory: z
-        .string()
-        .optional()
-        .describe(
-          "Directory to scan. Defaults to the current working directory."
-        ),
-      project: z
-        .string()
-        .optional()
-        .describe(
-          "Project name to save results to. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
-        ),
+      description:
+        "Scan your local project directory for security issues. Checks for exposed API keys, hardcoded secrets, missing rate limiting, and more. Results are saved to your GuardRail dashboard.",
+      inputSchema: {
+        directory: z
+          .string()
+          .optional()
+          .describe(
+            "Directory to scan. Defaults to the current working directory."
+          ),
+        project: z
+          .string()
+          .optional()
+          .describe(
+            "Project name to save results to. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
+          ),
+      },
     },
     async ({ directory, project: projectArg }) => {
       // Require API key — scan is gated behind authentication

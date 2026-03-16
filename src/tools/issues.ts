@@ -21,16 +21,19 @@ interface IssuesResponse {
 }
 
 export function registerIssuesTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_issues",
-    "List all security issues found in the latest scan. Shows each issue's severity, category, and description.",
     {
-      project: z
-        .string()
-        .optional()
-        .describe(
-          "Project name. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
-        ),
+      description:
+        "List all security issues found in the latest scan. Shows each issue's severity, category, and description.",
+      inputSchema: {
+        project: z
+          .string()
+          .optional()
+          .describe(
+            "Project name. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
+          ),
+      },
     },
     async ({ project: projectArg }) => {
       if (!apiClient.isConfigured()) {

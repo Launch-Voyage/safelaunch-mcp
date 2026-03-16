@@ -8,10 +8,12 @@ interface UpgradeResponse {
 }
 
 export function registerUpgradeTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_upgrade",
-    "Upgrade your GuardRail plan to Pro. Pro includes unlimited scans, unlimited projects, priority support, and more. Opens a checkout link for payment.",
-    {},
+    {
+      description:
+        "Upgrade your GuardRail plan to Pro. Pro includes unlimited scans, unlimited projects, priority support, and more. Opens a checkout link for payment.",
+    },
     async () => {
       if (!apiClient.isConfigured()) {
         return {

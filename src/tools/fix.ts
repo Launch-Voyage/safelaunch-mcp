@@ -30,21 +30,24 @@ interface FixResponse {
 }
 
 export function registerFixTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_fix",
-    "Get detailed fix instructions for a specific security issue. Includes step-by-step guide with code examples and AI prompts you can use.",
     {
-      check_key: z
-        .string()
-        .describe(
-          'The check_key of the issue to fix (e.g. "api_key_hardcoded", "stripe_key_exposed"). Get this from guardrail_issues.'
-        ),
-      project: z
-        .string()
-        .optional()
-        .describe(
-          "Project name. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
-        ),
+      description:
+        "Get detailed fix instructions for a specific security issue. Includes step-by-step guide with code examples and AI prompts you can use.",
+      inputSchema: {
+        check_key: z
+          .string()
+          .describe(
+            'The check_key of the issue to fix (e.g. "api_key_hardcoded", "stripe_key_exposed"). Get this from guardrail_issues.'
+          ),
+        project: z
+          .string()
+          .optional()
+          .describe(
+            "Project name. Required when using an account API key (gr_ak_). Not needed with a project key (gr_sk_)."
+          ),
+      },
     },
     async ({ check_key, project: projectArg }) => {
       if (!apiClient.isConfigured()) {

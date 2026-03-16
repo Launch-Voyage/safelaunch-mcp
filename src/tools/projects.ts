@@ -15,10 +15,12 @@ interface ProjectsResponse {
 }
 
 export function registerProjectsTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_projects",
-    "List all your GuardRail projects. Use project names with other tools like guardrail_scan, guardrail_status, etc.",
-    {},
+    {
+      description:
+        "List all your GuardRail projects. Use project names with other tools like guardrail_scan, guardrail_status, etc.",
+    },
     async () => {
       if (!apiClient.isConfigured()) {
         return {

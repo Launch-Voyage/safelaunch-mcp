@@ -8,8 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

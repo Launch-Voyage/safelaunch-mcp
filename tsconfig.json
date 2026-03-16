@@ -4,9 +4,9 @@
     "target": "ES2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "outDir": "./dist",
     "rootDir": "./src",
-    "declaration": true
+    "noEmit": true,
+    "types": ["node", "vitest/globals"]
   },
   "include": ["src"]
 }

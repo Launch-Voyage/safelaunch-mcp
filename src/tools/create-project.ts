@@ -7,21 +7,24 @@ interface CreateProjectResponse {
 }
 
 export function registerCreateProjectTool(server: McpServer): void {
-  server.tool(
+  server.registerTool(
     "guardrail_create_project",
-    "Create a new GuardRail project. Free plan allows up to 3 projects. After creation, use the project name with guardrail_scan to scan it.",
     {
-      name: z.string().describe("Project name (e.g. 'my-saas-app')"),
-      url: z
-        .string()
-        .optional()
-        .describe("Project URL (e.g. 'https://myapp.com')"),
-      github_repo: z
-        .string()
-        .optional()
-        .describe(
-          "GitHub repository URL (e.g. 'https://github.com/user/repo')"
-        ),
+      description:
+        "Create a new GuardRail project. Free plan allows up to 3 projects. After creation, use the project name with guardrail_scan to scan it.",
+      inputSchema: {
+        name: z.string().describe("Project name (e.g. 'my-saas-app')"),
+        url: z
+          .string()
+          .optional()
+          .describe("Project URL (e.g. 'https://myapp.com')"),
+        github_repo: z
+          .string()
+          .optional()
+          .describe(
+            "GitHub repository URL (e.g. 'https://github.com/user/repo')"
+          ),
+      },
     },
     async ({ name, url, github_repo }) => {
       if (!apiClient.isConfigured()) {

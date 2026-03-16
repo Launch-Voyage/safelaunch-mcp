@@ -85,13 +85,24 @@ export async function scanLocalDirectory(dir: string): Promise<RepoFile[]> {
   const entries = await readdir(dir, { recursive: true, withFileTypes: true });
 
   const filePaths: string[] = [];
+  let skippedSymlinks = 0;
   for (const entry of entries) {
+    if (entry.isSymbolicLink()) {
+      skippedSymlinks++;
+      continue;
+    }
     if (!entry.isFile()) continue;
-    const fullPath = join((entry as any).parentPath ?? (entry as any).path ?? dir, entry.name);
+    const fullPath = join(entry.parentPath ?? dir, entry.name);
     const relPath = relative(dir, fullPath).replace(/\\/g, "/");
     if (shouldIncludeFile(relPath)) {
       filePaths.push(relPath);
     }
+  }
+
+  if (skippedSymlinks > 0) {
+    console.error(
+      `[guardrail-mcp] Skipped ${skippedSymlinks} symlinked ${skippedSymlinks === 1 ? "entry" : "entries"} during scan`
+    );
   }
 
   // Sort by priority and limit
