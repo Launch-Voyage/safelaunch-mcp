@@ -23,10 +23,10 @@ const CHECK_LABELS: Record<string, string> = {
 
 export function registerScanTool(server: McpServer): void {
   server.registerTool(
-    "guardrail_scan",
+    "safelaunch_scan",
     {
       description:
-        "Scan your local project directory for security issues. Checks for exposed API keys, hardcoded secrets, missing rate limiting, and more. Results are saved to your GuardRail dashboard.",
+        "Scan your local project directory for security issues. Checks for exposed API keys, hardcoded secrets, missing rate limiting, and more. Results are saved to your SafeLaunch dashboard.",
       inputSchema: {
         directory: z
           .string()
@@ -139,7 +139,7 @@ export function registerScanTool(server: McpServer): void {
         }
         lines.push("");
         lines.push(
-          "Use guardrail_fix with check_key to get detailed fix steps."
+          "Use safelaunch_fix with check_key to get detailed fix steps."
         );
       }
 
@@ -149,7 +149,7 @@ export function registerScanTool(server: McpServer): void {
         lines.push("Results shown above are from local analysis only (not saved to dashboard).");
       } else if (savedToCloud) {
         lines.push("");
-        lines.push("Results saved to your GuardRail dashboard.");
+        lines.push("Results saved to your SafeLaunch dashboard.");
       }
 
       lines.push("");
@@ -160,9 +160,9 @@ export function registerScanTool(server: McpServer): void {
         lines.push("");
         lines.push("---");
         lines.push(
-          "Want real-time protection? Install the Guardrail SDK to detect brute force attacks, suspicious logins, and traffic spikes while your app runs."
+          "Want real-time protection? Install the SafeLaunch SDK to detect brute force attacks, suspicious logins, and traffic spikes while your app runs."
         );
-        lines.push("  npm install guardrail-sdk");
+        lines.push("  npm install @safelaunch/sdk");
       }
 
       return {

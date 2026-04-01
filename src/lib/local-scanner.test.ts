@@ -8,7 +8,7 @@ describe("scanLocalDirectory", () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), "guardrail-test-"));
+    tempDir = await mkdtemp(join(tmpdir(), "safelaunch-test-"));
   });
 
   afterEach(async () => {

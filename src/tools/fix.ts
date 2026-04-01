@@ -31,7 +31,7 @@ interface FixResponse {
 
 export function registerFixTool(server: McpServer): void {
   server.registerTool(
-    "guardrail_fix",
+    "safelaunch_fix",
     {
       description:
         "Get detailed fix instructions for a specific security issue. Includes step-by-step guide with code examples and AI prompts you can use.",
@@ -39,7 +39,7 @@ export function registerFixTool(server: McpServer): void {
         check_key: z
           .string()
           .describe(
-            'The check_key of the issue to fix (e.g. "api_key_hardcoded", "stripe_key_exposed"). Get this from guardrail_issues.'
+            'The check_key of the issue to fix (e.g. "api_key_hardcoded", "stripe_key_exposed"). Get this from safelaunch_issues.'
           ),
         project: z
           .string()

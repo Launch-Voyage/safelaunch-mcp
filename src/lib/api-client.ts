@@ -1,8 +1,8 @@
 const API_URL =
-  process.env.GUARDRAIL_API_URL || "https://guardrail-seven.vercel.app";
-const API_KEY = process.env.GUARDRAIL_API_KEY;
-const PROJECT_KEY = process.env.GUARDRAIL_PROJECT_KEY; // backward compat
-const DEFAULT_PROJECT = process.env.GUARDRAIL_PROJECT;
+  process.env.SAFELAUNCH_API_URL || "https://safelaunch.vercel.app";
+const API_KEY = process.env.SAFELAUNCH_API_KEY;
+const PROJECT_KEY = process.env.SAFELAUNCH_PROJECT_KEY; // backward compat
+const DEFAULT_PROJECT = process.env.SAFELAUNCH_PROJECT;
 
 export class ApiClient {
   private baseUrl: string;
@@ -27,27 +27,27 @@ export class ApiClient {
     return this.isAccountKey;
   }
 
-  /** Get default project name from GUARDRAIL_PROJECT env var */
+  /** Get default project name from SAFELAUNCH_PROJECT env var */
   getDefaultProject(): string | undefined {
     return this.defaultProject;
   }
 
   getConfigError(): string {
     return [
-      "GUARDRAIL_API_KEY is not set.",
+      "SAFELAUNCH_API_KEY is not set.",
       "",
       "Get started in 60 seconds:",
-      "1. Sign up free → https://guardrail-seven.vercel.app/signup",
+      "1. Sign up free → https://safelaunch.vercel.app/signup",
       "2. Go to Profile Settings → generate your API Key",
       "3. Add it to your Claude Code MCP config:",
       "",
       "{",
       '  "mcpServers": {',
-      '    "guardrail": {',
+      '    "safelaunch": {',
       '      "command": "npx",',
-      '      "args": ["-y", "guardrail-mcp@latest"],',
+      '      "args": ["-y", "@safelaunch/mcp@latest"],',
       '      "env": {',
-      '        "GUARDRAIL_API_KEY": "gr_ak_your_key_here"',
+      '        "SAFELAUNCH_API_KEY": "gr_ak_your_key_here"',
       "      }",
       "    }",
       "  }",

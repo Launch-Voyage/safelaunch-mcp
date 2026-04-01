@@ -14,7 +14,7 @@ describe("scan tool integration", () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    tempDir = await mkdtemp(join(tmpdir(), "guardrail-scan-test-"));
+    tempDir = await mkdtemp(join(tmpdir(), "safelaunch-scan-test-"));
   });
 
   afterEach(async () => {

@@ -16,10 +16,10 @@ interface ProjectsResponse {
 
 export function registerProjectsTool(server: McpServer): void {
   server.registerTool(
-    "guardrail_projects",
+    "safelaunch_projects",
     {
       description:
-        "List all your GuardRail projects. Use project names with other tools like guardrail_scan, guardrail_status, etc.",
+        "List all your SafeLaunch projects. Use project names with other tools like safelaunch_scan, safelaunch_status, etc.",
     },
     async () => {
       if (!apiClient.isConfigured()) {
@@ -39,7 +39,7 @@ export function registerProjectsTool(server: McpServer): void {
             content: [
               {
                 type: "text" as const,
-                text: "No projects yet. Use guardrail_create_project to create one.",
+                text: "No projects yet. Use safelaunch_create_project to create one.",
               },
             ],
           };
@@ -60,11 +60,11 @@ export function registerProjectsTool(server: McpServer): void {
           const defaultProject = apiClient.getDefaultProject();
           if (defaultProject) {
             lines.push("");
-            lines.push(`Default project (GUARDRAIL_PROJECT): ${defaultProject}`);
+            lines.push(`Default project (SAFELAUNCH_PROJECT): ${defaultProject}`);
           } else {
             lines.push("");
             lines.push(
-              'Tip: Set GUARDRAIL_PROJECT in your MCP config to avoid specifying project each time.'
+              'Tip: Set SAFELAUNCH_PROJECT in your MCP config to avoid specifying project each time.'
             );
           }
         }
