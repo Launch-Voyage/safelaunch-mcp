@@ -7,6 +7,7 @@ export interface GradeResult {
   summary: string;
   passCount: number;
   failCount: number;
+  skippedCount: number;
   criticalCount: number;
   warningCount: number;
 }
@@ -20,26 +21,32 @@ const GRADE_SUMMARIES: Record<ScanGrade, string> = {
 };
 
 export function calculateGrade(results: CheckResult[]): GradeResult {
-  const passCount = results.filter((r) => r.status === "pass").length;
-  const failCount = results.length - passCount;
-  const criticalCount = results.filter(
+  const evaluated = results.filter((r) => r.status !== "skipped");
+  const skippedCount = results.length - evaluated.length;
+
+  const passCount = evaluated.filter((r) => r.status === "pass").length;
+  const failCount = evaluated.filter((r) => r.status === "fail").length;
+  const criticalCount = evaluated.filter(
     (r) => r.status === "fail" && r.severity === "critical"
   ).length;
-  const warningCount = results.filter(
+  const warningCount = evaluated.filter(
     (r) => r.status === "fail" && r.severity === "warning"
   ).length;
 
+  const total = evaluated.length;
   let grade: ScanGrade;
 
-  if (criticalCount >= 2 || passCount <= 2) {
+  if (total === 0) {
+    grade = "A";
+  } else if (criticalCount >= 2 || (total > 2 && passCount <= total * 0.25)) {
     grade = "F";
-  } else if (passCount <= 4) {
+  } else if (total > 2 && passCount <= total * 0.5) {
     grade = "D";
-  } else if (passCount <= 7 && criticalCount <= 1) {
+  } else if (failCount > 0 && criticalCount <= 1) {
     grade = "C";
-  } else if (passCount === 7 && criticalCount === 0) {
+  } else if (failCount === 1 && criticalCount === 0) {
     grade = "B";
-  } else if (passCount === 8) {
+  } else if (failCount === 0) {
     grade = "A";
   } else {
     grade = "C";
@@ -50,6 +57,7 @@ export function calculateGrade(results: CheckResult[]): GradeResult {
     summary: GRADE_SUMMARIES[grade],
     passCount,
     failCount,
+    skippedCount,
     criticalCount,
     warningCount,
   };

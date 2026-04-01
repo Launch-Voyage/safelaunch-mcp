@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { scanLocalDirectory } from "../lib/local-scanner.js";
 import { runAllChecks } from "../lib/checks.js";
+import { checkDependencyVulns } from "../lib/osv-client.js";
 import { calculateGrade } from "../lib/grade.js";
 import { apiClient } from "../lib/api-client.js";
 import {
@@ -78,9 +79,11 @@ export function registerScanTool(server: McpServer): void {
         };
       }
 
-      // 2. Run checks locally
+      // 2. Run checks locally + dependency vulnerability scan
       const checkResults = runAllChecks(files);
-      const gradeResult = calculateGrade(checkResults);
+      const depResults = await checkDependencyVulns(files);
+      const allResults = [...checkResults, ...depResults];
+      const gradeResult = calculateGrade(allResults);
 
       // 3. Try to save to API (non-blocking)
       let savedToCloud = false;
@@ -91,7 +94,7 @@ export function registerScanTool(server: McpServer): void {
         if (apiClient.isConfigured()) {
           const res = await apiClient.postRaw("/api/mcp/scan", {
             project,
-            checkResults,
+            checkResults: allResults,
             grade: gradeResult.grade,
             passCount: gradeResult.passCount,
             failCount: gradeResult.failCount,
@@ -116,11 +119,11 @@ export function registerScanTool(server: McpServer): void {
       }
 
       // 4. Format output
-      const failedChecks = checkResults.filter((r) => r.status === "fail");
+      const failedChecks = allResults.filter((r) => r.status === "fail");
       const lines: string[] = [];
 
       lines.push(`Scan complete! Grade: ${gradeResult.grade}`);
-      lines.push(`${gradeResult.passCount}/${checkResults.length} checks passed`);
+      lines.push(`${gradeResult.passCount}/${allResults.length} checks passed`);
       lines.push("");
 
       if (failedChecks.length === 0) {
@@ -131,7 +134,7 @@ export function registerScanTool(server: McpServer): void {
         );
         lines.push("");
         for (const check of failedChecks) {
-          const label = CHECK_LABELS[check.check_key] || check.check_key;
+          const label = check.title || CHECK_LABELS[check.check_key] || check.check_key;
           lines.push(`- [${check.severity}] ${label}`);
         }
         lines.push("");
