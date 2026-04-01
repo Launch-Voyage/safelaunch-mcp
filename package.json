@@ -2,6 +2,7 @@
   "name": "@safelaunch/mcp",
   "version": "0.1.0",
   "description": "SafeLaunch MCP server for Claude Code — security scanning from your editor",
+  "license": "MIT",
   "type": "module",
   "bin": "./dist/index.js",
   "files": [
