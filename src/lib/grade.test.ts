@@ -1,105 +1,161 @@
-import { describe, it, expect } from "vitest";
-import { calculateGrade, type GradeResult } from "./grade.js";
+import { describe, it, expect, beforeEach } from "vitest";
+import { calculateGrade } from "./grade.js";
 import type { CheckResult } from "./checks.js";
 
-/** Helper: create N passing + remaining failing CheckResults */
-function makeResults(
-  passCount: number,
-  opts: { criticalFails?: number } = {}
-): CheckResult[] {
-  const total = 8;
-  const failCount = total - passCount;
-  const criticalFails = opts.criticalFails ?? 0;
-  const warningFails = failCount - criticalFails;
+const KEYS: CheckResult["check_key"][] = [
+  "stripe_key_exposed",
+  "webhook_no_verify",
+  "password_plaintext",
+  "no_rate_limit",
+  "env_not_gitignored",
+  "api_key_hardcoded",
+  "no_https",
+  "no_privacy_policy",
+  "dep_vuln_test",
+];
+let keyIdx = 0;
 
-  const results: CheckResult[] = [];
-
-  for (let i = 0; i < passCount; i++) {
-    results.push({
-      check_key: `check_pass_${i}`,
-      category: "infra",
-      status: "pass",
-      severity: "warning",
-    });
-  }
-  for (let i = 0; i < criticalFails; i++) {
-    results.push({
-      check_key: `check_critical_${i}`,
-      category: "secrets",
-      status: "fail",
-      severity: "critical",
-    });
-  }
-  for (let i = 0; i < warningFails; i++) {
-    results.push({
-      check_key: `check_warning_${i}`,
-      category: "infra",
-      status: "fail",
-      severity: "warning",
-    });
-  }
-
-  return results;
+function makeResult(
+  status: "pass" | "fail" | "skipped",
+  severity: "critical" | "warning" = "warning"
+): CheckResult {
+  return {
+    check_key: KEYS[keyIdx++ % KEYS.length],
+    category: "infra",
+    status,
+    severity,
+  };
 }
 
 describe("calculateGrade", () => {
-  it("returns A when all 8 checks pass", () => {
-    const result = calculateGrade(makeResults(8));
-    expect(result.grade).toBe("A");
-    expect(result.passCount).toBe(8);
-    expect(result.failCount).toBe(0);
-    expect(result.summary).toBe("All clear — looking good!");
+  beforeEach(() => {
+    keyIdx = 0;
   });
 
-  it("returns C when 7 pass and 0 critical (B unreachable — C condition catches first)", () => {
-    // Note: The B branch (passCount === 7 && criticalCount === 0) is unreachable
-    // because the C branch (passCount <= 7 && criticalCount <= 1) is checked first.
-    const result = calculateGrade(makeResults(7, { criticalFails: 0 }));
-    expect(result.grade).toBe("C");
-    expect(result.passCount).toBe(7);
-    expect(result.warningCount).toBe(1);
+  it("returns grade A when all checks pass", () => {
+    const results = Array.from({ length: 8 }, () => makeResult("pass"));
+    const grade = calculateGrade(results);
+
+    expect(grade.grade).toBe("A");
+    expect(grade.passCount).toBe(8);
+    expect(grade.failCount).toBe(0);
+    expect(grade.criticalCount).toBe(0);
+    expect(grade.warningCount).toBe(0);
+    expect(grade.skippedCount).toBe(0);
+    expect(grade.summary).toBe("All clear — looking good!");
   });
 
-  it("returns C when 7 pass with 1 critical", () => {
-    const result = calculateGrade(makeResults(7, { criticalFails: 1 }));
-    expect(result.grade).toBe("C");
-    expect(result.criticalCount).toBe(1);
+  it("returns grade A when all checks are skipped", () => {
+    const results = Array.from({ length: 5 }, () => makeResult("skipped"));
+    const grade = calculateGrade(results);
+
+    expect(grade.grade).toBe("A");
+    expect(grade.skippedCount).toBe(5);
+    expect(grade.passCount).toBe(0);
+    expect(grade.failCount).toBe(0);
   });
 
-  it("returns C when 5-6 pass with ≤1 critical", () => {
-    const result5 = calculateGrade(makeResults(5, { criticalFails: 1 }));
-    expect(result5.grade).toBe("C");
+  it("returns grade C when there is 1 warning failure (B branch is shadowed by C)", () => {
+    const results = [
+      ...Array.from({ length: 5 }, () => makeResult("pass")),
+      makeResult("fail", "warning"),
+    ];
+    const grade = calculateGrade(results);
 
-    const result6 = calculateGrade(makeResults(6, { criticalFails: 0 }));
-    expect(result6.grade).toBe("C");
+    expect(grade.grade).toBe("C");
+    expect(grade.failCount).toBe(1);
+    expect(grade.warningCount).toBe(1);
+    expect(grade.criticalCount).toBe(0);
   });
 
-  it("returns D when 3-4 pass", () => {
-    const result3 = calculateGrade(makeResults(3, { criticalFails: 1 }));
-    expect(result3.grade).toBe("D");
+  it("returns grade C when there is 1 critical failure among many passes", () => {
+    const results = [
+      ...Array.from({ length: 6 }, () => makeResult("pass")),
+      makeResult("fail", "critical"),
+    ];
+    const grade = calculateGrade(results);
 
-    const result4 = calculateGrade(makeResults(4, { criticalFails: 1 }));
-    expect(result4.grade).toBe("D");
+    expect(grade.grade).toBe("C");
+    expect(grade.criticalCount).toBe(1);
   });
 
-  it("returns F when 2+ critical failures", () => {
-    const result = calculateGrade(makeResults(6, { criticalFails: 2 }));
-    expect(result.grade).toBe("F");
-    expect(result.summary).toBe("Critical issues need attention");
+  it("returns grade C when there are a few warning failures", () => {
+    const results = [
+      ...Array.from({ length: 5 }, () => makeResult("pass")),
+      makeResult("fail", "warning"),
+      makeResult("fail", "warning"),
+    ];
+    const grade = calculateGrade(results);
+
+    expect(grade.grade).toBe("C");
   });
 
-  it("returns F when ≤2 pass", () => {
-    const result = calculateGrade(makeResults(2, { criticalFails: 1 }));
-    expect(result.grade).toBe("F");
+  it("returns grade F when 2+ critical failures", () => {
+    const results = [
+      ...Array.from({ length: 3 }, () => makeResult("pass")),
+      makeResult("fail", "critical"),
+      makeResult("fail", "critical"),
+    ];
+    const grade = calculateGrade(results);
 
-    const result0 = calculateGrade(makeResults(0, { criticalFails: 4 }));
-    expect(result0.grade).toBe("F");
+    expect(grade.grade).toBe("F");
+    expect(grade.criticalCount).toBe(2);
+    expect(grade.summary).toBe("Critical issues need attention");
   });
 
-  it("counts critical and warning separately", () => {
-    const result = calculateGrade(makeResults(5, { criticalFails: 1 }));
-    expect(result.criticalCount).toBe(1);
-    expect(result.warningCount).toBe(2);
-    expect(result.failCount).toBe(3);
+  it("returns grade F when <=25% pass among 4+ evaluated", () => {
+    const results = [
+      makeResult("pass"),
+      makeResult("fail", "warning"),
+      makeResult("fail", "warning"),
+      makeResult("fail", "warning"),
+    ];
+    const grade = calculateGrade(results);
+
+    expect(grade.grade).toBe("F");
+  });
+
+  it("returns grade D when <=50% pass among 4+ evaluated", () => {
+    const results = [
+      makeResult("pass"),
+      makeResult("pass"),
+      makeResult("fail", "warning"),
+      makeResult("fail", "warning"),
+      makeResult("skipped"),
+    ];
+    const grade = calculateGrade(results);
+
+    expect(grade.grade).toBe("D");
+    expect(grade.skippedCount).toBe(1);
+  });
+
+  it("excludes skipped checks from grade calculation", () => {
+    const results = [
+      ...Array.from({ length: 4 }, () => makeResult("pass")),
+      ...Array.from({ length: 4 }, () => makeResult("skipped")),
+    ];
+    const grade = calculateGrade(results);
+
+    expect(grade.grade).toBe("A");
+    expect(grade.skippedCount).toBe(4);
+    expect(grade.passCount).toBe(4);
+  });
+
+  it("returns correct counts for mixed results", () => {
+    const results = [
+      makeResult("pass"),
+      makeResult("pass"),
+      makeResult("pass"),
+      makeResult("fail", "critical"),
+      makeResult("fail", "warning"),
+      makeResult("skipped"),
+    ];
+    const grade = calculateGrade(results);
+
+    expect(grade.passCount).toBe(3);
+    expect(grade.failCount).toBe(2);
+    expect(grade.criticalCount).toBe(1);
+    expect(grade.warningCount).toBe(1);
+    expect(grade.skippedCount).toBe(1);
   });
 });

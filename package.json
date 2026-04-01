@@ -21,5 +21,11 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "msw": "^2.12.14",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.1"
   }
 }
