@@ -22,7 +22,7 @@ interface IssuesResponse {
 
 export function registerIssuesTool(server: McpServer): void {
   server.registerTool(
-    "guardrail_issues",
+    "safelaunch_issues",
     {
       description:
         "List all security issues found in the latest scan. Shows each issue's severity, category, and description.",
@@ -80,7 +80,7 @@ export function registerIssuesTool(server: McpServer): void {
           );
           lines.push(`   Category: ${issue.category}`);
           lines.push(`   ${issue.description}`);
-          lines.push(`   Fix: use guardrail_fix with check_key="${issue.check_key}"`);
+          lines.push(`   Fix: use safelaunch_fix with check_key="${issue.check_key}"`);
           lines.push("");
         }
 

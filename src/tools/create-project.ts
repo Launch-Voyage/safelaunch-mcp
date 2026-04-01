@@ -8,10 +8,10 @@ interface CreateProjectResponse {
 
 export function registerCreateProjectTool(server: McpServer): void {
   server.registerTool(
-    "guardrail_create_project",
+    "safelaunch_create_project",
     {
       description:
-        "Create a new GuardRail project. Free plan allows up to 3 projects. After creation, use the project name with guardrail_scan to scan it.",
+        "Create a new SafeLaunch project. Free plan allows up to 3 projects. After creation, use the project name with safelaunch_scan to scan it.",
       inputSchema: {
         name: z.string().describe("Project name (e.g. 'my-saas-app')"),
         url: z
@@ -45,7 +45,7 @@ export function registerCreateProjectTool(server: McpServer): void {
         lines.push(`Project "${data.project.name}" created!`);
         lines.push("");
         lines.push(
-          `You can now scan it: use guardrail_scan with project="${data.project.name}"`
+          `You can now scan it: use safelaunch_scan with project="${data.project.name}"`
         );
 
         return {

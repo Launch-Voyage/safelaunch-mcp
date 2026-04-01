@@ -10,7 +10,7 @@ import { registerCreateProjectTool } from "./tools/create-project.js";
 import { registerProjectsTool } from "./tools/projects.js";
 
 const server = new McpServer({
-  name: "guardrail-mcp",
+  name: "safelaunch-mcp",
   version: "0.1.0",
 });
 

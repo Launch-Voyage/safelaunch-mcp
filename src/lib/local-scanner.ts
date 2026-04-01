@@ -101,7 +101,7 @@ export async function scanLocalDirectory(dir: string): Promise<RepoFile[]> {
 
   if (skippedSymlinks > 0) {
     console.error(
-      `[guardrail-mcp] Skipped ${skippedSymlinks} symlinked ${skippedSymlinks === 1 ? "entry" : "entries"} during scan`
+      `[safelaunch-mcp] Skipped ${skippedSymlinks} symlinked ${skippedSymlinks === 1 ? "entry" : "entries"} during scan`
     );
   }
 

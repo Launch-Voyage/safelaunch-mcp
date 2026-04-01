@@ -29,10 +29,10 @@ interface StatusResponse {
 
 export function registerStatusTool(server: McpServer): void {
   server.registerTool(
-    "guardrail_status",
+    "safelaunch_status",
     {
       description:
-        "Get the current security status of your GuardRail project including the latest scan grade, uptime, and SSL certificate status.",
+        "Get the current security status of your SafeLaunch project including the latest scan grade, uptime, and SSL certificate status.",
       inputSchema: {
         project: z
           .string()
@@ -75,7 +75,7 @@ export function registerStatusTool(server: McpServer): void {
           lines.push(`Last scan: ${data.latestScan.scannedAt} (${data.latestScan.source})`);
         } else {
           lines.push("");
-          lines.push("No scans yet. Run guardrail_scan to scan your project.");
+          lines.push("No scans yet. Run safelaunch_scan to scan your project.");
         }
 
         if (data.monitoring) {

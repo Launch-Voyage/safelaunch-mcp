@@ -11,55 +11,55 @@ describe("ApiClient", () => {
   });
 
   describe("isConfigured", () => {
-    it("returns true when GUARDRAIL_API_KEY is set", async () => {
-      process.env.GUARDRAIL_API_KEY = "gr_ak_test_key_12345";
+    it("returns true when SAFELAUNCH_API_KEY is set", async () => {
+      process.env.SAFELAUNCH_API_KEY = "gr_ak_test_key_12345";
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.isConfigured()).toBe(true);
     });
 
-    it("returns true when only GUARDRAIL_PROJECT_KEY is set", async () => {
-      delete process.env.GUARDRAIL_API_KEY;
-      process.env.GUARDRAIL_PROJECT_KEY = "gr_sk_test_key_12345";
+    it("returns true when only SAFELAUNCH_PROJECT_KEY is set", async () => {
+      delete process.env.SAFELAUNCH_API_KEY;
+      process.env.SAFELAUNCH_PROJECT_KEY = "gr_sk_test_key_12345";
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.isConfigured()).toBe(true);
       // Restore for other tests
-      process.env.GUARDRAIL_API_KEY = "gr_ak_test_key_12345";
-      delete process.env.GUARDRAIL_PROJECT_KEY;
+      process.env.SAFELAUNCH_API_KEY = "gr_ak_test_key_12345";
+      delete process.env.SAFELAUNCH_PROJECT_KEY;
     });
 
     it("returns false when no key is set", async () => {
-      const origApiKey = process.env.GUARDRAIL_API_KEY;
-      const origProjectKey = process.env.GUARDRAIL_PROJECT_KEY;
-      delete process.env.GUARDRAIL_API_KEY;
-      delete process.env.GUARDRAIL_PROJECT_KEY;
+      const origApiKey = process.env.SAFELAUNCH_API_KEY;
+      const origProjectKey = process.env.SAFELAUNCH_PROJECT_KEY;
+      delete process.env.SAFELAUNCH_API_KEY;
+      delete process.env.SAFELAUNCH_PROJECT_KEY;
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.isConfigured()).toBe(false);
       // Restore
-      process.env.GUARDRAIL_API_KEY = origApiKey;
-      process.env.GUARDRAIL_PROJECT_KEY = origProjectKey;
+      process.env.SAFELAUNCH_API_KEY = origApiKey;
+      process.env.SAFELAUNCH_PROJECT_KEY = origProjectKey;
     });
   });
 
   describe("isAccountMode", () => {
-    it("returns true when GUARDRAIL_API_KEY is set", async () => {
-      process.env.GUARDRAIL_API_KEY = "gr_ak_test_key_12345";
+    it("returns true when SAFELAUNCH_API_KEY is set", async () => {
+      process.env.SAFELAUNCH_API_KEY = "gr_ak_test_key_12345";
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.isAccountMode()).toBe(true);
     });
 
     it("returns false when only PROJECT_KEY is set", async () => {
-      delete process.env.GUARDRAIL_API_KEY;
-      process.env.GUARDRAIL_PROJECT_KEY = "gr_sk_test_key_12345";
+      delete process.env.SAFELAUNCH_API_KEY;
+      process.env.SAFELAUNCH_PROJECT_KEY = "gr_sk_test_key_12345";
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.isAccountMode()).toBe(false);
       // Restore
-      process.env.GUARDRAIL_API_KEY = "gr_ak_test_key_12345";
-      delete process.env.GUARDRAIL_PROJECT_KEY;
+      process.env.SAFELAUNCH_API_KEY = "gr_ak_test_key_12345";
+      delete process.env.SAFELAUNCH_PROJECT_KEY;
     });
   });
 
@@ -109,15 +109,15 @@ describe("ApiClient", () => {
     });
 
     it("throws when no key is configured", async () => {
-      const origKey = process.env.GUARDRAIL_API_KEY;
-      delete process.env.GUARDRAIL_API_KEY;
-      delete process.env.GUARDRAIL_PROJECT_KEY;
+      const origKey = process.env.SAFELAUNCH_API_KEY;
+      delete process.env.SAFELAUNCH_API_KEY;
+      delete process.env.SAFELAUNCH_PROJECT_KEY;
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       await expect(client.get("/api/mcp/test")).rejects.toThrow(
-        "GUARDRAIL_API_KEY is not set"
+        "SAFELAUNCH_API_KEY is not set"
       );
-      process.env.GUARDRAIL_API_KEY = origKey;
+      process.env.SAFELAUNCH_API_KEY = origKey;
     });
   });
 
@@ -160,16 +160,16 @@ describe("ApiClient", () => {
   });
 
   describe("getDefaultProject", () => {
-    it("returns GUARDRAIL_PROJECT env var", async () => {
-      process.env.GUARDRAIL_PROJECT = "my-project";
+    it("returns SAFELAUNCH_PROJECT env var", async () => {
+      process.env.SAFELAUNCH_PROJECT = "my-project";
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.getDefaultProject()).toBe("my-project");
-      delete process.env.GUARDRAIL_PROJECT;
+      delete process.env.SAFELAUNCH_PROJECT;
     });
 
     it("returns undefined when not set", async () => {
-      delete process.env.GUARDRAIL_PROJECT;
+      delete process.env.SAFELAUNCH_PROJECT;
       const { ApiClient } = await import("./api-client.js");
       const client = new ApiClient();
       expect(client.getDefaultProject()).toBeUndefined();

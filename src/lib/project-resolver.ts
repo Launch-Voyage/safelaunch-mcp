@@ -21,8 +21,8 @@ export function getProjectRequiredError(project?: string): string | null {
     "",
     "Specify a project:",
     '  Use the "project" parameter, or',
-    "  Set GUARDRAIL_PROJECT in your MCP config env.",
+    "  Set SAFELAUNCH_PROJECT in your MCP config env.",
     "",
-    "Run guardrail_projects to list your projects.",
+    "Run safelaunch_projects to list your projects.",
   ].join("\n");
 }

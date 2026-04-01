@@ -1,7 +1,7 @@
 {
-  "name": "@guardrail/mcp",
+  "name": "@safelaunch/mcp",
   "version": "0.1.0",
-  "description": "GuardRail MCP server for Claude Code — security scanning from your editor",
+  "description": "SafeLaunch MCP server for Claude Code — security scanning from your editor",
   "type": "module",
   "bin": "./dist/index.js",
   "files": [
