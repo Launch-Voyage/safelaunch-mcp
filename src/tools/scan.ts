@@ -162,7 +162,7 @@ export function registerScanTool(server: McpServer): void {
         lines.push(
           "Want real-time protection? Install the SafeLaunch SDK to detect brute force attacks, suspicious logins, and traffic spikes while your app runs."
         );
-        lines.push("  npm install @safelaunch/sdk");
+        lines.push("  npm install @safelaunch/sdk-node");
       }
 
       return {
