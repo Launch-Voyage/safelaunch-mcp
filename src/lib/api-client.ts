@@ -1,5 +1,5 @@
 const API_URL =
-  process.env.SAFELAUNCH_API_URL || "https://safelaunch.vercel.app";
+  process.env.SAFELAUNCH_API_URL || "https://safelaunch.dev";
 const API_KEY = process.env.SAFELAUNCH_API_KEY;
 const PROJECT_KEY = process.env.SAFELAUNCH_PROJECT_KEY; // backward compat
 const DEFAULT_PROJECT = process.env.SAFELAUNCH_PROJECT;
@@ -37,7 +37,7 @@ export class ApiClient {
       "SAFELAUNCH_API_KEY is not set.",
       "",
       "Get started in 60 seconds:",
-      "1. Sign up free → https://safelaunch.vercel.app/signup",
+      "1. Sign up free → https://safelaunch.dev/signup",
       "2. Go to Profile Settings → generate your API Key",
       "3. Add it to your Claude Code MCP config:",
       "",
